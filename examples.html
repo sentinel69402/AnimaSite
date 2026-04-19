@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Examples | Anima</title>
+  <meta name="description"
+    content="Real-world Anima examples: basic playback, locomotion blending, state machines, overlays, NPC support, and composition patterns." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <canvas id="bg-canvas"></canvas>
+  <div class="page-shell">
+    <header class="site-header">
+      <a href="index.html" class="brand" aria-label="Home">
+        <span class="logo"><img src="anima128.png" alt="Anima" width="24" height="24" /></span>
+        <div>
+          <p class="brand-title">Anima</p>
+          <p class="brand-subtitle">Tame your animations.</p>
+        </div>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-label="Open navigation">☰</button>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="api.html" class="nav-link">API</a>
+        <a href="examples.html" class="nav-link">Examples</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" style="padding-bottom: clamp(3rem, 5vw, 4rem);">
+        <div class="hero-glow"></div>
+        <div class="hero-copy">
+          <span class="badge">Examples</span>
+          <h1>Real use cases.</h1>
+          <p class="lead">Focused scripts for specific scenarios, matching the examples folder included in the module.
+          </p>
+        </div>
+      </section>
+
+      <div class="container">
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">01</p>
+            <h2>Basic playback</h2>
+            <p>The simplest way to play an animation. Create an Anima instance and call <code>:PlayAnimation</code>.</p>
+          </div>
+          <pre><code><span class="kw">local</span> Anima = <span class="fn">require</span>(game.ReplicatedStorage.Anima)
+
+<span class="kw">local</span> anima = Anima.<span class="fn">new</span>(
+    game.ReplicatedStorage.anims,
+    game.Players.LocalPlayer
+)
+
+anima:<span class="fn">PlayAnimation</span>(<span class="str">"Idle"</span>, {
+    loop     = <span class="nb">true</span>,
+    fadeTime = <span class="nb">0.2</span>
+})</code></pre>
+        </section>
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">02</p>
+            <h2>Disabling Roblox Animate</h2>
+            <p>Take full control of character animation by disabling the default Animate script. Just pass
+              <code>true</code> as the fourth argument.</p>
+          </div>
+          <pre><code><span class="kw">local</span> anima = Anima.<span class="fn">new</span>(
+    game.ReplicatedStorage.anims,
+    game.Players.LocalPlayer,
+    <span class="nb">false</span>,
+    <span class="nb">true</span>
+)</code></pre>
+        </section>
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">03</p>
+            <h2>State machines</h2>
+            <p>Manage high-level character states like Jump, Attack, or Idle without mixing that logic into your
+              movement code.</p>
+          </div>
+          <div class="split">
+            <div>
+              <p>The state machine lets you define transitions based on a shared context. Each state can have
+                <code>onEnter</code> and <code>onExit</code> callbacks. Call <code>:Update()</code> every frame to
+                evaluate transitions.</p>
+              <div class="callout" style="margin-top: 1rem;">
+                <p>The state machine decides <em>what</em> the character is doing. Blend controllers handle <em>how</em>
+                  that motion looks.</p>
+              </div>
+            </div>
+            <div>
+              <pre><code><span class="kw">local</span> SM = anima:<span class="fn">CreateStateMachine</span>({
+    initial = <span class="str">"Locomotion"</span>,
+    context = { IsJumping = <span class="nb">false</span> }
+})
+
+SM:<span class="fn">AddState</span>(<span class="str">"Jump"</span>, {
+    onEnter = <span class="kw">function</span>()
+        anima:<span class="fn">PlayAnimation</span>(<span class="str">"Jump"</span>)
+    <span class="kw">end</span>,
+    transitions = {
+        Locomotion = <span class="kw">function</span>(ctx)
+            <span class="kw">return</span> <span class="kw">not</span> ctx.IsJumping
+        <span class="kw">end</span>
+    }
+})</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">04</p>
+            <h2>Locomotion blending</h2>
+            <p>Keep Idle and Run tracks alive and smoothly shift weight based on speed. No snapping between states.</p>
+          </div>
+          <pre><code>anima:<span class="fn">CreateBlendController</span>(<span class="str">"Locomotion"</span>, {
+    nodes = {
+        { name = <span class="str">"Idle"</span>, min = <span class="nb">0</span>,  max = <span class="nb">1</span> },
+        { name = <span class="str">"Run"</span>,  min = <span class="nb">6</span>,  max = <span class="nb">16</span> }
+    }
+})
+
+<span class="kw">local</span> speed = humanoid.MoveDirection.Magnitude * humanoid.WalkSpeed
+anima:<span class="fn">UpdateBlend</span>(<span class="str">"Locomotion"</span>, speed)</code></pre>
+        </section>
+
+        <section class="card spotlight reveal">
+          <div class="section-header">
+            <p class="eyebrow">05</p>
+            <h2>Composition: states + blending</h2>
+            <p>The real power of Anima: combine a state machine with a blend controller. The state machine handles
+              intent, and the blend controller handles smooth motion.</p>
+          </div>
+          <pre><code><span class="kw">local</span> SM = anima:<span class="fn">CreateStateMachine</span>({
+    initial = <span class="str">"Locomotion"</span>,
+    context = { IsJumping = <span class="nb">false</span> }
+})
+
+SM:<span class="fn">AddState</span>(<span class="str">"Locomotion"</span>, {
+    transitions = {
+        Jump = <span class="kw">function</span>(ctx) <span class="kw">return</span> ctx.IsJumping <span class="kw">end</span>
+    }
+})
+
+SM:<span class="fn">AddState</span>(<span class="str">"Jump"</span>, {
+    onEnter = <span class="kw">function</span>() anima:<span class="fn">PlayAnimation</span>(<span class="str">"Jump"</span>) <span class="kw">end</span>,
+    onExit  = <span class="kw">function</span>() anima:<span class="fn">StopAnimation</span>(<span class="str">"Jump"</span>, <span class="nb">0.1</span>) <span class="kw">end</span>,
+    transitions = {
+        Locomotion = <span class="kw">function</span>(ctx) <span class="kw">return not</span> ctx.IsJumping <span class="kw">end</span>
+    }
+})
+
+anima:<span class="fn">CreateBlendController</span>(<span class="str">"Locomotion"</span>, {
+    nodes = {
+        { name = <span class="str">"Idle"</span>, min = <span class="nb">0</span>, max = <span class="nb">1</span> },
+        { name = <span class="str">"Run"</span>,  min = <span class="nb">0</span>, max = <span class="nb">16</span> }
+    }
+})
+
+RunService.Heartbeat:<span class="fn">Connect</span>(<span class="kw">function</span>()
+    SM.Context.IsJumping = humanoid:<span class="fn">GetState</span>()
+        == Enum.HumanoidStateType.Jumping
+
+    <span class="kw">if</span> SM:<span class="fn">GetState</span>() == <span class="str">"Locomotion"</span> <span class="kw">then</span>
+        <span class="kw">local</span> speed = humanoid.MoveDirection.Magnitude
+            * humanoid.WalkSpeed
+        anima:<span class="fn">UpdateBlend</span>(<span class="str">"Locomotion"</span>, speed)
+    <span class="kw">else</span>
+        anima:<span class="fn">UpdateBlend</span>(<span class="str">"Locomotion"</span>, <span class="nb">0</span>)
+    <span class="kw">end</span>
+
+    SM:<span class="fn">Update</span>()
+<span class="kw">end</span>)</code></pre>
+        </section>
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">06</p>
+            <h2>Overlay animations</h2>
+            <p>Layer actions like punching or casting on top of movement using animation priorities.</p>
+          </div>
+          <pre><code>anima:<span class="fn">PlayAnimation</span>(<span class="str">"Punch"</span>, {
+    priority   = Enum.AnimationPriority.Action,
+    stopOthers = <span class="nb">false</span>,
+    fadeTime   = <span class="nb">0.1</span>
+})</code></pre>
+        </section>
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">07</p>
+            <h2>NPC &amp; custom rig support</h2>
+            <p>Anima works with non-player characters and <code>AnimationController</code> rigs. Just pass the model
+              instead of a player.</p>
+          </div>
+          <pre><code><span class="kw">local</span> npcAnima = Anima.<span class="fn">new</span>(
+    game.ReplicatedStorage.npcAnims,
+    workspace.NPC
+)
+
+npcAnima:<span class="fn">PlayAnimation</span>(<span class="str">"Patrol"</span>, { loop = <span class="nb">true</span> })</code></pre>
+        </section>
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">08</p>
+            <h2>Cleanup</h2>
+            <p>When you're done with an instance, like when a character dies or an NPC despawns, call
+              <code>:Destroy()</code> to clean up tracks and connections.</p>
+          </div>
+          <pre><code>anima:<span class="fn">Destroy</span>()</code></pre>
+        </section>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-links">
+          <a href="api.html">API Reference</a>
+          <a href="index.html">Back to home</a>
+        </div>
+        <p>Made by <strong>Sentinel</strong>. Licensed under Apache 2.0.</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

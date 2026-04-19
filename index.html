@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anima | Tame Your Roblox Animations</title>
+  <meta name="description"
+    content="Anima is a lightweight animation library for Roblox. Clean playback, smooth blending, and optional state machines without fighting your gameplay code." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <canvas id="bg-canvas"></canvas>
+  <div class="page-shell">
+    <header class="site-header">
+      <a href="index.html" class="brand" aria-label="Home">
+        <span class="logo"><img src="anima128.png" alt="Anima" width="24" height="24" /></span>
+        <div>
+          <p class="brand-title">Anima</p>
+          <p class="brand-subtitle">Tame your animations.</p>
+        </div>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-label="Open navigation">☰</button>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="api.html" class="nav-link">API</a>
+        <a href="examples.html" class="nav-link">Examples</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-glow"></div>
+        <div class="hero-copy">
+          <span class="badge">v2 · Apache 2.0</span>
+          <h1>Animations that don't <em>fight back</em>.</h1>
+          <p class="lead">Anima is a lightweight Roblox animation library that handles caching, blending, and state
+            transitions so you can focus on making your game feel good.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="api.html">Explore the API</a>
+            <a class="btn btn-ghost" href="examples.html">See examples</a>
+          </div>
+        </div>
+      </section>
+
+      <div class="container">
+        <section class="section-grid cols-3 reveal">
+          <article class="card card-compact">
+            <div class="icon blue"></div>
+            <h3>Zero-cost caching</h3>
+            <p>Tracks are loaded once and stored. No runtime hitches from loading assets on the fly, just instant
+              playback.</p>
+          </article>
+          <article class="card card-compact reveal delay-1">
+            <div class="icon teal"></div>
+            <h3>Real blending</h3>
+            <p>Animations stay alive at weight 0 during transitions. No popping, no jarring cuts, just smooth
+              interpolation.</p>
+          </article>
+          <article class="card card-compact reveal delay-2">
+            <div class="icon purple"></div>
+            <h3>NPC &amp; custom rigs</h3>
+            <p>Works out of the box for players, NPCs, or any model with a Humanoid or AnimationController.</p>
+          </article>
+        </section>
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">The problem</p>
+            <h2>Roblox animation code gets messy fast.</h2>
+          </div>
+          <div class="split">
+            <div>
+              <p>Standard approaches turn into a web of duplicated track loading, scripts fighting over priorities, and
+                hard-to-read movement checks scattered everywhere. Anima takes a different approach.</p>
+              <div class="callout" style="margin-top: 1.25rem;">
+                <p>You decide <strong>what</strong> should play. Anima handles <strong>how</strong> it behaves.</p>
+              </div>
+            </div>
+            <div>
+              <ul>
+                <li><strong>Folder-based setup</strong> point it at a folder and it finds everything. No manual config.
+                </li>
+                <li><strong>Singleton pattern</strong> one instance per player, no duplicated logic.</li>
+                <li><strong>Animate conflict handling</strong> disable Roblox's default Animate script with one flag.
+                </li>
+                <li><strong>Optional state machine</strong> keep intent separate from motion without mixing things up.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="card spotlight reveal">
+          <div class="section-header">
+            <p class="eyebrow">Core systems</p>
+            <h2>Blend controllers &amp; state machines.</h2>
+            <p>High-level tools that stay out of your way until you need them.</p>
+          </div>
+          <div class="feature-grid">
+            <article>
+              <h3>1D Blend Controllers</h3>
+              <p>Smoothly interpolate between Idle, Walk, and Run based on a single value, usually speed. No snapping.
+              </p>
+            </article>
+            <article>
+              <h3>State Machine</h3>
+              <p>Define high-level intent like "jumping" or "attacking" without mixing it into your physics or input
+                code.</p>
+            </article>
+            <article>
+              <h3>Composable</h3>
+              <p>Use states and blending together. Let the state machine decide <em>what</em>, and the blend controller
+                decide <em>how</em>.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="card spotlight reveal">
+          <div class="section-header">
+            <p class="eyebrow">Quick start</p>
+            <h2>Up and running in seconds.</h2>
+          </div>
+          <pre><code><span class="kw">local</span> Anima = <span class="fn">require</span>(game.ReplicatedStorage.Anima)
+
+<span class="kw">local</span> anima = Anima.<span class="fn">new</span>(
+    game.ReplicatedStorage.anims,
+    game.Players.LocalPlayer,
+    <span class="nb">false</span>,
+    <span class="nb">true</span>
+)
+
+anima:<span class="fn">PlayAnimation</span>(<span class="str">"Idle"</span>, {
+    loop     = <span class="nb">true</span>,
+    fadeTime = <span class="nb">0.2</span>
+})</code></pre>
+          <div class="quick-links">
+            <a class="btn btn-ghost" href="api.html">Full API reference</a>
+            <a class="btn btn-ghost" href="examples.html">More examples</a>
+          </div>
+        </section>
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">Philosophy</p>
+            <h2>Predictable and composable.</h2>
+          </div>
+          <p>Anima handles how animations look and transition, but it doesn't decide how your game works. It
+            specifically avoids movement logic, input handling, character controllers, and gameplay decisions. If it has
+            side effects that surprise you, that's a bug.</p>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-links">
+          <a href="about.html">About</a>
+          <a href="api.html">API</a>
+          <a href="examples.html">Examples</a>
+        </div>
+        <p>Made by <strong>Sentinel</strong>. Licensed under Apache 2.0.</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference | Anima</title>
+  <meta name="description"
+    content="Complete API reference for Anima: initialization, playback, blend controllers, state machines, queries, and lifecycle methods." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <canvas id="bg-canvas"></canvas>
+  <div class="page-shell">
+    <header class="site-header">
+      <a href="index.html" class="brand" aria-label="Home">
+        <span class="logo"><img src="anima128.png" alt="Anima" width="24" height="24" /></span>
+        <div>
+          <p class="brand-title">Anima</p>
+          <p class="brand-subtitle">Tame your animations.</p>
+        </div>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-label="Open navigation">☰</button>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="api.html" class="nav-link">API</a>
+        <a href="examples.html" class="nav-link">Examples</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" style="padding-bottom: clamp(3rem, 5vw, 4rem);">
+        <div class="hero-glow"></div>
+        <div class="hero-copy">
+          <span class="badge">API Reference</span>
+          <h1>How to use Anima.</h1>
+          <p class="lead">Everything you need to know, from creating an instance to managing blend controllers and state
+            machines.</p>
+        </div>
+      </section>
+
+      <div class="container">
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">Types</p>
+            <h2>Core type definitions.</h2>
+          </div>
+          <pre><code><span class="kw">type</span> PlaybackConfig = {
+    fadeTime:    <span class="fn">number</span>?,
+    weight:      <span class="fn">number</span>?,
+    priority:    <span class="fn">Enum.Priority</span>?,
+    loop:        <span class="fn">boolean</span>?,
+    stopOthers:  <span class="fn">boolean</span>?
+}
+
+<span class="kw">type</span> BlendNode = {
+    name: <span class="fn">string</span>,
+    min:  <span class="fn">number</span>,
+    max:  <span class="fn">number</span>
+}
+
+<span class="kw">type</span> State = {
+    onEnter:     <span class="fn">(() -> ())</span>?,
+    onExit:      <span class="fn">(() -> ())</span>?,
+    transitions: { [<span class="fn">string</span>]: (<span class="fn">context</span>: <span class="fn">table</span>) -> <span class="fn">boolean</span> }?
+}</code></pre>
+        </section>
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">Initialization</p>
+            <h2>Creating an Anima instance.</h2>
+          </div>
+          <div class="api-list">
+            <div class="api-entry">
+              <h3>Anima.new(source, subject, debug?, disableAnimate?)</h3>
+              <p><code>source</code> can be a <strong>Folder</strong> or a <strong>Table</strong>
+                (<code>{[string]: number | string}</code>). <code>subject</code> can be a <strong>Player</strong> or a
+                <strong>Model</strong> (NPC/custom rig). Automatically detects a Humanoid or AnimationController.
+                Returns a singleton when a Player is provided.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:LoadAnimations()</h3>
+              <p>Manually re-scan the animation folder and load any new entries.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:Cache()</h3>
+              <p>Reloads character animator and tracks. Call this on respawn to rebind everything.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:WatchForChanges()</h3>
+              <p>Enables live-reloading of animations during development. Useful for iteration in Studio.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">Playback</p>
+            <h2>Playing and stopping animations.</h2>
+          </div>
+          <div class="api-list">
+            <div class="api-entry">
+              <h3>:PlayAnimation(name, config?) → AnimationTrack?</h3>
+              <p>Start a named animation. Pass a <code>PlaybackConfig</code> to control fading, looping, weight, and
+                priority.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:StopAnimation(name, fadeTime?) → boolean</h3>
+              <p>Fade out a specific animation. Returns whether the track was found and stopped.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:PauseAnimation(name) / :ResumeAnimation(name)</h3>
+              <p>Pause a playing track and resume it later without restarting.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:PlayLooped(name, loopCount?)</h3>
+              <p>Play an animation a specific number of loops, then stop automatically.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:SetAnimation(name, id)</h3>
+              <p>Dynamically set or replace an animation using an ID or Instance.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:SetAnimationSpeed(name, speed)</h3>
+              <p>Persistently sets the playback speed for an animation.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:SetWeight(name, weight, fadeTime?)</h3>
+              <p>Manually set track weight for layering and blending control.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:FadeAllOut(fadeTime?)</h3>
+              <p>Fade out every currently playing animation.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">Queries</p>
+            <h2>Asking Anima about state.</h2>
+          </div>
+          <div class="api-list">
+            <div class="api-entry">
+              <h3>:GetAnimationTrack(name) → AnimationTrack?</h3>
+              <p>Returns the raw AnimationTrack for a named animation, if loaded.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:GetPlayingTracks() → { string }</h3>
+              <p>Returns a list of animation names that are currently playing.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:GetAnimationProgress(name) → (progress, isPlaying)</h3>
+              <p>Get the playback progress (0 to 1) and whether the animation is currently active.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:IsAnimationPlaying(name) / :IsAnimationLoaded(name)</h3>
+              <p>Quick boolean checks for animation state.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">Grouping &amp; Sequencing</p>
+            <h2>Batch operations and queues.</h2>
+          </div>
+          <div class="api-list">
+            <div class="api-entry">
+              <h3>:QueueAnimations(names, config?)</h3>
+              <p>Play a list of animations in sequence, one after the other.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:playSequence(names, fadeTime)</h3>
+              <p>Simplified sequential playback with a shared fade time.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:setAnimationTag(name, tag) / :fadeOutTag(tag, fadeTime?)</h3>
+              <p>Tag animations for batch control. Fade out an entire group at once.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card spotlight reveal">
+          <div class="section-header">
+            <p class="eyebrow">Systems</p>
+            <h2>Blend controllers &amp; state machines.</h2>
+          </div>
+          <div class="api-list">
+            <div class="api-entry">
+              <h3>:CreateBlendController(name, profile) → BlendController</h3>
+              <p>Set up smooth 1D blending, typically for locomotion. Requires a list of <code>BlendNode</code> entries.
+              </p>
+            </div>
+            <div class="api-entry">
+              <h3>:UpdateBlend(name, value)</h3>
+              <p>Feed a numeric value (e.g. speed) to a blend controller and let Anima mix the animation weights.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:CreateStateMachine(config) → StateMachine</h3>
+              <p>Create a state machine for managing high-level character intent. Provide an initial state and context
+                table.</p>
+            </div>
+          </div>
+
+          <hr class="divider" style="margin: 1.5rem 0;" />
+
+          <h3 style="margin-bottom: 0.75rem; color: var(--text-bright);">BlendController methods</h3>
+          <div class="api-list">
+            <div class="api-entry">
+              <h3>:Update(value)</h3>
+              <p>Manually update the blend tree weights based on the given value.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:Destroy()</h3>
+              <p>Clean up the controller and release resources.</p>
+            </div>
+          </div>
+
+          <hr class="divider" style="margin: 1.5rem 0;" />
+
+          <h3 style="margin-bottom: 0.75rem; color: var(--text-bright);">StateMachine methods</h3>
+          <div class="api-list">
+            <div class="api-entry">
+              <h3>:AddState(name, state)</h3>
+              <p>Register a new state with optional <code>onEnter</code>, <code>onExit</code>, and
+                <code>transitions</code>.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:GetState() → string</h3>
+              <p>Returns the current state name.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:SetState(name)</h3>
+              <p>Force a transition to a specific state.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:Update()</h3>
+              <p>Evaluate transitions based on the current context. Call this every frame.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:Lock(duration)</h3>
+              <p>Prevent transitions for a set amount of time. Useful for uninterruptible animations.</p>
+            </div>
+            <div class="api-entry">
+              <h3>.Context</h3>
+              <p>The shared table for transition data. Update this before calling <code>:Update()</code>.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">Lifecycle</p>
+            <h2>Events and cleanup.</h2>
+          </div>
+          <div class="api-list">
+            <div class="api-entry">
+              <h3>:getPlaySignal() / :getStopSignal()</h3>
+              <p>Returns custom Signal objects. Listeners receive: <code>(animationName, player?, character)</code>.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:setAnimationCallbacks(name, callbacks)</h3>
+              <p>Hook into animation state changes or markers for custom reactions.</p>
+            </div>
+            <div class="api-entry">
+              <h3>:Destroy()</h3>
+              <p>Clean up all tracks and event connections. Call when you're done with the instance.</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-links">
+          <a href="examples.html">See examples</a>
+          <a href="about.html">About Anima</a>
+        </div>
+        <p>Made by <strong>Sentinel</strong>. Licensed under Apache 2.0.</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

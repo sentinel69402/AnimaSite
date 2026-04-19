@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About | Anima</title>
+  <meta name="description"
+    content="Why Anima exists, what it does and doesn't do, and the design philosophy behind the library." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <canvas id="bg-canvas"></canvas>
+  <div class="page-shell">
+    <header class="site-header">
+      <a href="index.html" class="brand" aria-label="Home">
+        <span class="logo"><img src="anima128.png" alt="Anima" width="24" height="24" /></span>
+        <div>
+          <p class="brand-title">Anima</p>
+          <p class="brand-subtitle">Tame your animations.</p>
+        </div>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-label="Open navigation">☰</button>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="api.html" class="nav-link">API</a>
+        <a href="examples.html" class="nav-link">Examples</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" style="padding-bottom: clamp(3rem, 5vw, 4rem);">
+        <div class="hero-glow"></div>
+        <div class="hero-copy">
+          <span class="badge">About</span>
+          <h1>Why Anima exists.</h1>
+          <p class="lead">Roblox animation code turns into a mess. Anima was made to fix that without trying to own your
+            gameplay.</p>
+        </div>
+      </section>
+
+      <div class="container">
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">The mess</p>
+            <h2>Standard Roblox animation code often turns into...</h2>
+          </div>
+          <div class="section-grid cols-2">
+            <div class="card card-compact">
+              <h3>Duplicated track loading</h3>
+              <p>The same load-and-play boilerplate copy-pasted across scripts, every time a new animation is needed.
+              </p>
+            </div>
+            <div class="card card-compact">
+              <h3>Priority conflicts</h3>
+              <p>Your script fights the default Animate script. Both try to play animations at the same time, and one
+                wins unpredictably.</p>
+            </div>
+            <div class="card card-compact">
+              <h3>Jarring transitions</h3>
+              <p>Stop-and-start playback causes animations to pop and snap instead of blending smoothly.</p>
+            </div>
+            <div class="card card-compact">
+              <h3>Spaghetti movement checks</h3>
+              <p>Hard-to-read speed, jump, and state checks scattered through gameplay scripts with no clear structure.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card spotlight reveal">
+          <div class="section-header">
+            <p class="eyebrow">Anima's approach</p>
+            <h2>Friendly, not dogmatic.</h2>
+            <p>Anima doesn't pretend to be a full controller or a physics engine. It focuses on one thing: animation
+              playback. And it does it well.</p>
+          </div>
+          <div class="feature-grid">
+            <article>
+              <h3>Tracks cached once</h3>
+              <p>AnimationTracks are loaded once and stored. No runtime hitches from loading assets when the character
+                starts moving.</p>
+            </article>
+            <article>
+              <h3>Real weight blending</h3>
+              <p>Animations stay alive at weight 0 during blends. It uses actual interpolation instead of just stopping
+                and starting tracks.</p>
+            </article>
+            <article>
+              <h3>Composable systems</h3>
+              <p>High-level features like state machines and blend controllers are completely optional. Use what you
+                need.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">Boundaries</p>
+            <h2>What Anima isn't.</h2>
+            <p>To keep things lightweight, this library specifically avoids:</p>
+          </div>
+          <div class="section-grid cols-2">
+            <div class="card card-compact">
+              <h3>Movement logic or physics</h3>
+              <p>Anima doesn't move your character. That's your game's job.</p>
+            </div>
+            <div class="card card-compact">
+              <h3>Input handling</h3>
+              <p>No key bindings, no controller support. Anima responds to your commands, not player input directly.</p>
+            </div>
+            <div class="card card-compact">
+              <h3>Character controllers</h3>
+              <p>No custom character controller. Use Anima alongside your own or Roblox's built-in systems.</p>
+            </div>
+            <div class="card card-compact">
+              <h3>Gameplay decisions</h3>
+              <p>Anima handles how animations look and transition, but it never decides how your game works.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card reveal">
+          <div class="section-header">
+            <p class="eyebrow">Built for real work</p>
+            <h2>Designed for actual Roblox projects.</h2>
+          </div>
+          <p>Many Roblox developers end up with one script handling movement, another handling animation, and a third
+            fighting Roblox's default Animate script. Anima keeps things clear, composable, and easy to maintain. Point
+            it at a folder or a table of IDs, tell it what to play, and it handles the rest.</p>
+          <div class="callout" style="margin-top: 1.25rem;">
+            <p>Anima is designed to be <strong>predictable and composable</strong>. It shouldn't have side effects that
+              surprise you. If it does, that's a bug.</p>
+          </div>
+        </section>
+
+        <section class="card spotlight reveal">
+          <div class="section-header">
+            <p class="eyebrow">Feature summary</p>
+            <h2>The heart of the module.</h2>
+          </div>
+          <ul>
+            <li><strong>Zero-cost caching</strong> load animation assets once, reuse them forever.</li>
+            <li><strong>1D blend controllers</strong> smooth transitions driven by a single value.</li>
+            <li><strong>Optional state machine</strong> separate intent from motion cleanly.</li>
+            <li><strong>Folder-based setup</strong> point at a folder, no manual config.</li>
+            <li><strong>NPC &amp; rig support</strong> works with Humanoids and AnimationControllers.</li>
+            <li><strong>Singleton pattern</strong> one instance per player, preventing duplicated logic.</li>
+            <li><strong>Animate conflict handling</strong> disable Roblox's Animate script with a flag.</li>
+            <li><strong>Well documented</strong> clear internal comments and a clean API.</li>
+          </ul>
+        </section>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-links">
+          <a href="api.html">API Reference</a>
+          <a href="examples.html">Examples</a>
+        </div>
+        <p>Made by <strong>Sentinel</strong>. Licensed under Apache 2.0.</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
